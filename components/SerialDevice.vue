@@ -720,46 +720,6 @@ const connectToEsc = async () => {
         escStore.isLoading = false;
     }
 
-    if (
-        escStore.escData.filter(
-            e => e.data.settingsBuffer.filter(s => s === 0xFF).length === e.data.settingsBuffer.length ||
-                  e.data.settingsBuffer.reduce((acc, cur) => acc + cur, 0) === 0
-        ).length > 0
-    ) {
-        toast.add({
-            title: 'Error',
-            color: 'red',
-            description: 'Found empty settings, flashing default settings now!'
-        });
-
-        savingOrApplyingSelectedEscs.value = escStore.escData.map((_, i) => i + 1);
-
-        applyDefaultConfig();
-    }
-
-    let needToSave = false;
-
-    for (const esc of escStore.escData) {
-        const firmwareVersion = `${esc.data.settings.MAIN_REVISION}.${esc.data.settings.SUB_REVISION}`;
-        if (firmwareVersion.endsWith('2.19')) {
-            if (esc.data.settings.TIMING_ADVANCE as number < 10) {
-                needToSave = true;
-                for (let i = 0; i < escStore.escData.length; ++i) {
-                    escStore.escData[i].data.settingsDirty = true;
-                    escStore.escData[i].data.settings.TIMING_ADVANCE = 16;
-                }
-            }
-        }
-    }
-
-    if (needToSave) {
-        await writeConfig();
-        toast.add({
-            title: 'Info',
-            color: 'blue',
-            description: 'Eeprom upgraded. Adjusted settings, saved and applied!'
-        });
-    }
 };
 
 const writeConfig = async () => {
@@ -1066,7 +1026,8 @@ const applyDefaultConfig = async () => {
 
     if (file) {
         const buffer = new Uint8Array(file);
-        const settings = bufferToSettings(buffer, eepromVersion);
+        const binaryVersion = buffer[1]; // LAYOUT_REVISION is always at offset 0x01
+        const settings = bufferToSettings(buffer, binaryVersion);
 
         settings.STARTUP_MELODY = (new Array(128)).fill(0xFF);
 

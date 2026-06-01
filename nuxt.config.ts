@@ -10,7 +10,7 @@ export default defineNuxtConfig({
 
     typescript: {
         shim: false,
-        typeCheck: true
+        typeCheck: false
     },
 
     nitro: {
@@ -134,6 +134,10 @@ export default defineNuxtConfig({
             navigateFallbackAllowlist: [/^\/$/],
             type: 'module'
         }
+    },
+
+    experimental: {
+        viteEnvironmentApi: true
     },
 
     compatibilityDate: '2024-09-16'

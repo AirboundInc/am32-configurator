@@ -120,8 +120,8 @@ const isDisabled = computed(() => {
 
 const value = computed({
     get: () => {
-        let value = props.escInfo[props.individual ?? 0].settings[props.field] as number;
-        if (value && props.type === 'number') {
+        let value = (props.escInfo[props.individual ?? 0].settings[props.field] ?? 0) as number;
+        if (props.type === 'number') {
             value = (value * props.displayFactor) + props.offset;
         }
         return value;
