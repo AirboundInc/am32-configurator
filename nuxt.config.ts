@@ -50,9 +50,9 @@ export default defineNuxtConfig({
             families: {
                 Roboto: true,
                 'Nunito Sans': true
-            }
+            },
+            download: false
         }],
-        '@nuxt/content',
         '@nuxt/image'
     ],
 
