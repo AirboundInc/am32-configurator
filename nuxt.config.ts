@@ -10,7 +10,7 @@ export default defineNuxtConfig({
 
     typescript: {
         shim: false,
-        typeCheck: false
+        typeCheck: true
     },
 
     nitro: {
