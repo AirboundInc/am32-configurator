@@ -1,4 +1,4 @@
-import { hash } from 'bcryptjs';
+import { hash } from 'bcrypt';
 
 export default defineEventHandler(async (event) => {
     await validateAdminSession(event);

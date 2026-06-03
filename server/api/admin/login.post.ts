@@ -1,4 +1,4 @@
-import { compare } from 'bcryptjs';
+import { compare } from 'bcrypt';
 
 export default defineEventHandler(async (event) => {
     const body = await readBody(event);
