@@ -135,7 +135,7 @@ export class FourWay {
         return `${make} - ${this.name}, ${revision}${bootloader}`;
     } */
 
-    async getInfo (target: number, initRetries = 2) {
+    async getInfo (target: number, initRetries = 5) {
         const logStore = useLogStore();
 
         const flash = await this.initFlash(target, initRetries);
@@ -162,7 +162,10 @@ export class FourWay {
             mcu.getInfo().layoutSize = Mcu!.LAYOUT_SIZE;
 
             const settingsArray = (await this.readAddress(eepromOffset, mcu.getInfo().layoutSize))!.params;
-            mcu.getInfo().settings = bufferToSettings(settingsArray, info.settings.LAYOUT_REVISION as number);
+            // Read LAYOUT_REVISION directly from the EEPROM buffer (offset 0x01) so version-gated
+            // fields like MAX_RAMP/MINIMUM_DUTY_CYCLE are parsed correctly, not skipped.
+            const eepromVersion = settingsArray[1];
+            mcu.getInfo().settings = bufferToSettings(settingsArray, eepromVersion);
             mcu.getInfo().settingsBuffer = settingsArray;
 
             const [valid, pin] = Mcu.parseBootLoaderPin(mcu.getInfo().bootloader.input);
@@ -171,13 +174,12 @@ export class FourWay {
             } else {
                 mcu.getInfo().bootloader.valid = true;
                 mcu.getInfo().bootloader.pin = pin;
-                mcu.getInfo().bootloader.version = info.settings.BOOT_LOADER_REVISION as number ?? 0;
+                mcu.getInfo().bootloader.version = mcu.getInfo().settings.BOOT_LOADER_REVISION as number ?? 0;
             }
 
             if (mcu.getInfo().bootloader.version === 0xFF) {
-                logStore.logWarning('Bootloader version unset, setting to 1');
-                info.settings.BOOT_LOADER_REVISION = 1;
-                await this.writeSettings(target, mcu.getInfo());
+                logStore.logWarning('Bootloader version unset on ESC #' + (target + 1) + ' - save settings to fix');
+                mcu.getInfo().settings.BOOT_LOADER_REVISION = 1;
                 mcu.getInfo().bootloader.version = 1;
             }
         } catch (e: any) {

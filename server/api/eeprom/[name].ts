@@ -10,6 +10,15 @@ const getVersion = (version: number) => {
 export default defineEventHandler(async (event) => {
     const version = Number(getQuery(event).version?.toString() ?? '2');
     const name = getRouterParam(event, 'name');
+
+    const minioUrl = process.env.MINIO_URL;
+    if (!minioUrl || minioUrl === 'localhost') {
+        if (name === 'DEFAULT') {
+            return '/assets/eeprom_default.bin';
+        }
+        throw createError({ statusCode: 404 });
+    }
+
     const minioClient = useMinio();
 
     const binariesCache = useStorage('binaries');

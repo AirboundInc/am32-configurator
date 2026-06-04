@@ -50,9 +50,9 @@ export default defineNuxtConfig({
             families: {
                 Roboto: true,
                 'Nunito Sans': true
-            }
+            },
+            download: false
         }],
-        '@nuxt/content',
         '@nuxt/image'
     ],
 
@@ -134,6 +134,10 @@ export default defineNuxtConfig({
             navigateFallbackAllowlist: [/^\/$/],
             type: 'module'
         }
+    },
+
+    experimental: {
+        viteEnvironmentApi: true
     },
 
     compatibilityDate: '2024-09-16'
