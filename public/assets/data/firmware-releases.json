@@ -6,14 +6,14 @@
       {
         "name": "v2.20",
         "files": [
-          {"name": "AM32_TBS_4IN1_G071_2.20.hex", "url": "/assets/firmwares/v2.20/AM32_TBS_4IN1_G071_2.20.hex"}
+          {"name": "AM32_BOTDRIVE_F421_2.20.hex", "url": "/assets/firmwares/v2.20/AM32_BOTDRIVE_F421_2.20.hex"}
         ],
         "children": []
       },
       {
         "name": "v2.19",
         "files": [
-          {"name": "AM32_TBS_4IN1_G071_2.19.hex", "url": "/assets/firmwares/v2.19/AM32_TBS_4IN1_G071_2.19.hex"}
+          {"name": "AM32_BOTDRIVE_F421_2.19.hex", "url": "/assets/firmwares/v2.19/AM32_BOTDRIVE_F421_2.19.hex"}
         ],
         "children": []
       }
