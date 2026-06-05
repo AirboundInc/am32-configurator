@@ -426,13 +426,21 @@ const isFlashingActive = computed(() => escStore.activeTarget > -1);
 
 const progressIsIntermediate = computed(() => !['Writing', 'Verifying'].includes(escStore.step));
 
-const { data, status } = useAsyncData('get-releases', () => useFetch(`/api/files?filter=releases${includePrerelease.value ? '&prereleases' : ''}`), {
-    watch: [includePrerelease]
+// FRONTEND-ONLY MODE: Loading firmware releases from JSON file instead of API call
+// Original API call commented out below - uncomment to re-enable backend
+// const { data, status } = useAsyncData('get-releases', () => useFetch(`/api/files?filter=releases${includePrerelease.value ? '&prereleases' : ''}`), {
+//     watch: [includePrerelease]
+// });
+
+// Load firmware releases from static JSON file (frontend-only mode)
+const { data: releasesDataFetched } = await useFetch<BlobFolder[]>('/assets/data/firmware-releases.json', {
+    key: 'firmware-releases-data'
 });
 
+const status = computed(() => releasesDataFetched.value ? 'success' : 'pending');
+
 const releases = computed(() => {
-    const tmp = data.value?.data as unknown as { data: BlobFolder[] };
-    return tmp?.data ?? [];
+    return releasesDataFetched.value || [];
 });
 
 const assets = computed(() => (releases.value?.[0]?.children.find(c => c.name === selectedRelease.value)?.files.map(f => f.name)));
@@ -1009,14 +1017,20 @@ const applyDefaultConfig = async () => {
     if (eepromVersion > 3) {
         eepromVersion = 2;
     }
-    const eepromUrl = await fetch(`/api/eeprom/${escStore.firstValidEscData?.data.meta.am32.fileName}?version=${eepromVersion}`)
-        .then((res) => {
-            if (res.status === 200) {
-                return res.text();
-            }
-            return fetch(`/api/eeprom/DEFAULT?version=${eepromVersion}`).then(res => res.text());
-        })
-        .catch(() => null);
+
+    // FRONTEND-ONLY MODE: Load EEPROM from local public file instead of API
+    // Original API calls commented out below - uncomment to re-enable backend
+    // const eepromUrl = await fetch(`/api/eeprom/${escStore.firstValidEscData?.data.meta.am32.fileName}?version=${eepromVersion}`)
+    //     .then((res) => {
+    //         if (res.status === 200) {
+    //             return res.text();
+    //         }
+    //         return fetch(`/api/eeprom/DEFAULT?version=${eepromVersion}`).then(res => res.text());
+    //     })
+    //     .catch(() => null);
+
+    // Frontend-only: Load from public/eeprom_default.bin
+    const eepromUrl = '/assets/eeprom_default.bin';
 
     if (!eepromUrl) {
         throw new Error('Eeprom not found');

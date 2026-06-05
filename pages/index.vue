@@ -3,6 +3,7 @@
     <div>
       <div class="p-4 max-w-[1400px] mx-auto pb-16">
         <div class="flex flex-col gap-4">
+          <!--
           <UCard>
             <UContainer>
               <h1 class="text-3xl font-bold mb-4">
@@ -13,6 +14,7 @@
               />
             </UContainer>
           </UCard>
+          -->
           <UCard>
             <UContainer>
               <h1 class="text-3xl font-bold mb-4">
@@ -141,16 +143,16 @@ interface ImageSpinnerImage {
     class?: string;
 }
 
-const { data: sponsorsResponse } = await useFetch<{ data: Sponsor[] }>('/api/sponsors');
+// const { data: sponsorsResponse } = await useFetch<{ data: Sponsor[] }>('/api/sponsors');
 
-const images = computed<ImageSpinnerImage[]>(() => {
-    if (!sponsorsResponse.value?.data) {
-        return [];
-    }
-    return sponsorsResponse.value.data.map(sponsor => ({
-        path: sponsor.image,
-        url: sponsor.url,
-        class: sponsor.class || undefined
-    }));
-});
+// const images = computed<ImageSpinnerImage[]>(() => {
+//     if (!sponsorsResponse.value?.data) {
+//         return [];
+//     }
+//     return sponsorsResponse.value.data.map(sponsor => ({
+//         path: sponsor.image,
+//         url: sponsor.url,
+//         class: sponsor.class || undefined
+//     }));
+// });
 </script>
