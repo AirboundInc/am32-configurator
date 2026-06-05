@@ -13,7 +13,9 @@
     "prisma:generate": "prisma generate",
     "prisma:migrate": "prisma migrate deploy",
     "prisma:push": "prisma db push",
-    "prisma:seed": "prisma db seed"
+    "prisma:seed": "prisma db seed",
+    "build:static": "npm run prepare && npm run generate",
+    "build:static:deploy": "npm ci && npm run prepare && npm run generate && npm prune --production"
   },
   "devDependencies": {
     "@egoist/tailwindcss-icons": "^1.9.2",
