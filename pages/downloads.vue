@@ -176,7 +176,14 @@
 </template>
 
 <script setup lang="ts">
-const { data, status } = await useLazyFetch('/api/files?prereleases');
+// FRONTEND-ONLY MODE: Using hardcoded file data instead of API call
+// Original API call commented out below - uncomment to re-enable backend
+// const { data, status } = await useLazyFetch('/api/files?prereleases');
+
+// Load file structure from static JSON file (frontend-only mode)
+const { data: filesData, status } = await useFetch<BlobFolder[]>('/assets/data/downloads.json', {
+    key: 'downloads-data'
+});
 
 const filter = ref('');
 
@@ -188,26 +195,31 @@ const sectionLabels: Record<string, string> = {
     unlocker: 'UNLOCKER'
 };
 
-watchEffect(() => {
-    if (status.value !== 'pending' && data.value) {
-        links.value = data.value.data;
-        rootFolders.value = data.value.data.map((folder) => {
-            return {
-                label: sectionLabels[folder.name ?? ''] ?? folder.name?.toUpperCase() ?? 'ERROR',
-                slot: `${folder.name}_data`
-            };
-        });
-    }
-});
-
 const links = ref<BlobFolder[]>([]);
 const rootFolders = ref<{
   label: string,
   slot: string
 }[]>([]);
 
+// Initialize data from fetched JSON structure
+watch(
+    () => filesData.value,
+    (newData) => {
+        if (newData) {
+            links.value = newData;
+            rootFolders.value = newData.map((folder) => {
+                return {
+                    label: sectionLabels[folder.name ?? ''] ?? folder.name?.toUpperCase() ?? 'ERROR',
+                    slot: `${folder.name}_data`
+                };
+            });
+        }
+    },
+    { immediate: true }
+);
+
 const getFolder = (name: string) => computed(() => {
-    return data.value?.data.find(b => b.name === name) ?? null;
+    return (filesData.value || []).find(b => b.name === name) ?? null;
 });
 
 const getChildrenFolder = (folder?: BlobFolder | null) => {
